@@ -1,0 +1,9 @@
+{
+	"name": "propel_billing",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"bill": "python3 sketch.py",
+		"test_billing": "python3 sketch.py --start 2025-12-28"
+	}
+}

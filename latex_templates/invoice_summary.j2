@@ -1,0 +1,79 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{tabularx}
+
+% ---------------- COLORS ----------------
+\definecolor{propel_blue}{HTML}{1652df}
+\definecolor{propel_teal}{HTML}{1eb9c2}
+
+% ---------------- HEADER ----------------
+\newcommand{\tutorSummaryHeader}{
+    \noindent
+    \begin{minipage}[t]{0.58\textwidth}
+        \vspace{0pt}
+        \raggedright
+        \textbf{Invoice Summary: (IVS)-{{ "%04d"|format(invoice_summary_number) }}}\\
+        \textbf{Date: {{ invoice_summary_date }}}\\
+        \vspace{1em}
+        \textbf{Biweek:} {{ biweek }}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.38\textwidth}
+        \vspace{0pt}
+        \raggedleft
+        \includegraphics[width=1.2cm]{../images/logo.png}\\[0.5em]
+        \textbf{\textcolor{propel_blue}{Propel Tutoring}}\\
+        \textit{Edmonton, AB}
+    \end{minipage}
+    \vspace{3em}
+}
+
+% ---------------- FOOTER ----------------
+\newcommand{\tutorSummaryFooter}{
+    \vspace{2em}
+    \begin{flushleft}
+        {% if notes %}
+        \textbf{Notes:}\\
+        {{ notes }}
+        {% endif %}
+    \end{flushleft}
+}
+
+% ---------------- DOCUMENT ----------------
+\begin{document}
+\pagestyle{empty}
+
+\tutorSummaryHeader
+
+% ---------------- TUTORS TABLE ----------------
+\noindent
+\begin{tabularx}{\textwidth}{p{1cm} p{2cm} p{2.5cm} p{2.5cm} p{3cm} X}
+    \multicolumn{6}{l}{\textcolor{propel_blue}{\textbf{Invoice Summary}}} \\
+    \toprule
+    \textbf{TID} & \textbf{Biller} & \textbf{Invoice \#} & \textbf{\# Sessions} & \textbf{\# Students} & \textbf{Total Due (\$)} \\
+    \midrule
+    {% for biller in billers %}
+    {{ biller.billing_id }} & {{ biller.biller_name }} & {{ biller.invoice_num }} & {{ biller.num_sessions }} & {{ biller.num_students }} & {{ biller.total_due|round(2) }} \\
+    {% endfor %}
+    \bottomrule
+\end{tabularx}
+
+\vspace{2em}
+
+% ---------------- SUMMARY TABLE ----------------
+\noindent
+\begin{tabularx}{\textwidth}{X p{2.5cm} X p{3cm}}
+    \multicolumn{4}{l}{\textcolor{propel_blue}{\textbf{Biweek Totals}}} \\
+    \toprule
+    \textbf{Total Sessions} & {{ billers|sum(attribute='num_sessions') }} & \textbf{Total Invoices} & {{ billers|length }} \\
+    \textbf{Total Students} & {{ billers|sum(attribute='num_students') }} & \textbf{Total Amount Earned} & \textbf{\$ {{ billers|sum(attribute='total_due')|round(2) }}} \\
+    \bottomrule
+\end{tabularx}
+
+\tutorSummaryFooter
+
+\end{document}

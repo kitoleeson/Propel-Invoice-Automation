@@ -1,0 +1,90 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{tabularx}
+
+% ---------------- COLORS ----------------
+\definecolor{propel_blue}{HTML}{1652df}
+\definecolor{propel_teal}{HTML}{1eb9c2}
+
+% ---------------- HEADER ----------------
+\newcommand{\invoiceHeader}{
+    \noindent
+    \begin{minipage}[t]{0.58\textwidth} % Client info on the left
+        \vspace{0pt}
+        \raggedright
+        \textbf{Invoice: INV-{{ "%04d"|format(invoice_number) }}}\\
+        \textbf{Date: {{ invoice_date }}}\\
+        \vspace{1em}
+        \textbf{Billing ID:} {{ "%02d"|format(billing_id) }}\\
+        \textbf{Biweek:} {{ biweek }}\\
+        \vspace{1em}
+        \textbf{Student Name(s):} {{ student_name }}\\
+        \textbf{Subjects:} {{ subjects_list }}\\
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.38\textwidth} % Propel info on the right
+        \vspace{0pt}
+        \raggedleft
+        \includegraphics[width=1.2cm]{../../../public/images/logo.png} \\[0.5em]
+        \textbf{\textcolor{propel_blue}{Propel Tutoring}}\\
+        \textit{Edmonton, AB}\\
+        \textit{e: {{ propel_email }}}\\
+        \textit{p: {{ propel_phone }}}\\
+    \end{minipage}%
+    \vspace{3em} % Space below header before tables
+}
+
+% ---------------- FOOTER ----------------
+\newcommand{\invoiceFooter}{
+    \vspace{2em}
+    \begin{flushleft}
+        \textbf{Payment Terms:}\\
+        Payment is due within 10 days of invoice date.\\
+        Please send an e-transfer to the email or phone number at the top of this invoice.\\
+        Please include the invoice number (INV-{{ "%04d"|format(invoice_number) }}) in the message of the e-transfer.\\
+        Late fee of 10\% per month applies to unpaid balances.
+    \end{flushleft}
+}
+
+% ---------------- DOCUMENT ----------------
+\begin{document}
+\pagestyle{empty}
+
+\invoiceHeader
+
+% ---------------- SESSION TABLE ----------------
+\noindent
+\begin{tabularx}{\textwidth}{p{2cm} X X p{2cm} p{3cm} p{3cm}}
+    \multicolumn{6}{l}{\textcolor{propel_blue}{\textbf{Session Summary}}}\\
+    \toprule
+    \textbf{Date} & \textbf{Student} & \textbf{Tutor} & \textbf{Hours} & \textbf{Rate (\$)} & \textbf{Total Fee (\$)} \\
+    \midrule
+    {% for session in sessions %}
+    {{ session.session_date }} & {{ session.student_pref_name }} & {{ session.tutor_name }} & {{ session.duration_hours }} & {{ session.hourly_rate }} & {{ session.total_fee }} \\
+    {% endfor %}
+    \midrule
+    \multicolumn{5}{l}{\textbf{Session Total:}} & \textbf{\${{ sessions|sum(attribute='total_fee') }}} \\
+    \bottomrule
+\end{tabularx}
+
+\vspace{2em} % Space between tables
+
+% ---------------- SUMMARY TABLE ----------------
+\noindent
+\begin{tabularx}{\textwidth}{X p{2cm} X p{2cm}}
+    \multicolumn{4}{l}{\textcolor{propel_blue}{\textbf{Invoice Summary}}} \\
+    \toprule
+    \textbf{Sessions} & {{ sessions|length }} & \textbf{Session Total} & \${{ sessions|sum(attribute='total_fee')|round(2) }} \\
+    \textbf{Total Hours} & {{ sessions|sum(attribute='duration_hours') }} & \textbf{Current Tab} & \${{ current_tab|round(2) }} \\
+    \midrule
+    \multicolumn{3}{l}{\textbf{Total Due (Tab + Session Total)}} & \textbf{\$ {{ sessions|sum(attribute='total_fee')|round(2) + current_tab|round(2) }}} \\
+    \bottomrule
+\end{tabularx}
+
+\invoiceFooter
+
+\end{document}
