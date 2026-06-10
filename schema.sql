@@ -266,10 +266,28 @@ COMMIT;
 -- ALTER TABLE billing_accounts
 -- ADD CONSTRAINT billing_accounts_email_key UNIQUE (email);
 
+-- -- billing_accounts.billing_id
+-- SELECT setval(
+--     pg_get_serial_sequence('billing_accounts', 'billing_id'),
+--     (SELECT COALESCE(MAX(billing_id), 1) FROM billing_accounts)
+-- );
+
+-- -- guardians.guardian_id
+-- SELECT setval(
+--     pg_get_serial_sequence('guardians', 'guardian_id'),
+--     (SELECT COALESCE(MAX(guardian_id), 1) FROM guardians)
+-- );
+
 -- -- invoices.invoice_id
 -- SELECT setval(
 --     pg_get_serial_sequence('invoices', 'invoice_id'),
 --     (SELECT COALESCE(MAX(invoice_id), 1) FROM invoices)
+-- );
+
+-- -- payments.payment_id
+-- SELECT setval(
+--     pg_get_serial_sequence('payments', 'payment_id'),
+--     (SELECT COALESCE(MAX(payment_id), 1) FROM payments)
 -- );
 
 -- -- payroll.payroll_id
@@ -284,8 +302,44 @@ COMMIT;
 --     (SELECT COALESCE(MAX(entry_id), 1) FROM payroll_entries)
 -- );
 
+-- -- pending_student_tutor.pending_student_tutor_id
+-- SELECT setval(
+--     pg_get_serial_sequence('pending_student_tutor', 'pending_student_tutor_id'),
+--     (SELECT COALESCE(MAX(pending_student_tutor_id), 1) FROM pending_student_tutor)
+-- );
+
+-- -- pending_tutors.pending_tutor_id
+-- SELECT setval(
+--     pg_get_serial_sequence('pending_tutors', 'pending_tutor_id'),
+--     (SELECT COALESCE(MAX(pending_tutor_id), 1) FROM pending_tutors)
+-- );
+
 -- -- sessions.session_id
 -- SELECT setval(
 --     pg_get_serial_sequence('sessions', 'session_id'),
 --     (SELECT COALESCE(MAX(session_id), 1) FROM sessions)
+-- );
+
+-- -- student_tutor.assignment_id
+-- SELECT setval(
+--     pg_get_serial_sequence('student_tutor', 'assignment_id'),
+--     (SELECT COALESCE(MAX(assignment_id), 1) FROM student_tutor)
+-- );
+
+-- -- students.student_id
+-- SELECT setval(
+--     pg_get_serial_sequence('students', 'student_id'),
+--     (SELECT COALESCE(MAX(student_id), 1) FROM students)
+-- );
+
+-- -- tutor_subjects.tutor_subject_id
+-- SELECT setval(
+--     pg_get_serial_sequence('tutor_subjects', 'tutor_subject_id'),
+--     (SELECT COALESCE(MAX(tutor_subject_id), 1) FROM tutor_subjects)
+-- );
+
+-- -- tutors.tutor_id
+-- SELECT setval(
+--     pg_get_serial_sequence('tutors', 'tutor_id'),
+--     (SELECT COALESCE(MAX(tutor_id), 1) FROM tutors)
 -- );

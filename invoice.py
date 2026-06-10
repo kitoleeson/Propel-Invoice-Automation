@@ -211,6 +211,7 @@ def build_invoice(
                 [
                     "pdflatex",
                     "-interaction=batchmode",
+                    "-include-directory=.",
                     "-output-directory",
                     str(output_path.parent),
                     str(tex_path),
@@ -271,6 +272,7 @@ def send_invoice(
             body = f"""Hello {name},|I'd like to welcome you to Propel Tutoring.|We use an automated invoicing system to keep our billing simple and consistent, and to make it easier for you to keep track of your tutoring expenses. Here's what to expect going forward:\n• Invoices are sent biweekly directly to your email, each covering a 2-week period of tutoring sessions.\n• Payment is due within 7 days from the day you receive the invoice.\n• All fees can be paid via e-transfer to the email and phone number listed on each invoice. Please include the invoice number in the message.\n• Our system operates based on "billing accounts", which allow you to manage multiple students under one email if needed. Your email is already linked to a billing account that includes your current student(s).\n• Each invoice will contain information for each session including tutor name, client name, and rate. This way if you have multiple students or tutors, everything is clearly laid out in one invoice.|I'd also like to inform/remind you that my sessions are billed in increments of 15 mins, rounded up or down to the nearest 0.25 hours; and that once set, hourly rates per tutor are locked in forever. More information on our billing policies can be found in the client agreement which you will be getting an email about shortly.|Please find attached your first tutoring invoice for the semester, for {biweek_start.strftime("%B %d")} (inclusive) to {biweek_end.strftime("%B %d, %Y")} (exclusive).|Please feel free to reach out if you have any questions or concerns regarding invoices, payments, or scheduling. I'm here to help!\nI appreciate your trust and support, and I'm excited to see the progress this semester will bring!|Kito Lee Son"""
     else:
         body = f"Hello {name},|Please find attached your tutoring invoice for the period of {biweek_start.strftime('%B %d')} (inclusive) to {biweek_end.strftime('%B %d, %Y')} (exclusive).|If you have any questions or concerns regarding invoices, payments, or scheduling, please feel free to reach out. I'm here to help!|Kito Lee Son"
+        # body = f"Hello {name},|Please find attached your tutoring invoice for the period of {biweek_start.strftime('%B %d')} (inclusive) to {biweek_end.strftime('%B %d, %Y')} (exclusive).|Please note, this invoice was supposed to be sent on May 31, however due to an internal systems issue, it has been delayed. As per usual, you have 7 days from receiving this invoice to complete payment, thus the fee is due on June 17. After this invoice, we will return to regularly-scheduled invoices, and the next invoice will be sent this Sunday, June 14, for the biweek of May 13 - June 14, 2026.|If you have any questions or concerns regarding invoices, payments, or scheduling, please feel free to reach out. I'm here to help!|Kito Lee Son"
     # body = f"Hi again {name},|I am so sorry for the confusion, but I just realized that there was a bug in my code which sent you the wrong invoice! I have fixed the error and attached the corrected invoice to this email.|Please use this updated invoice for your records and disregard the previous one. I apologize for any inconvenience this may have caused, especially since this happened last invoice day too! The development process has been a rocky road, however all bugs are now fixed and we will not be having this issue again.|Please let me know if you have any questions or concerns!|Kito Lee Son"
 
     options = {
@@ -345,12 +347,11 @@ def generate_and_send_tutor_payroll(
     ):
         try:
             cursor.execute(
-                """INSERT INTO payroll (biweek_start, total_hours, total_amount, date_paid, date_generated) VALUES (%s, %s, %s, %s, %s) RETURNING payroll_id""",
+                """INSERT INTO payroll (biweek_start, total_hours, total_amount, date_generated) VALUES (%s, %s, %s, %s) RETURNING payroll_id""",
                 (
                     biweek_start,
                     sum(tutor["num_hours"] for tutor in tutors),
                     sum(tutor["total_earned"] for tutor in tutors),
-                    date.today() + timedelta(days=7),
                     date.today(),
                 ),
             )
@@ -414,6 +415,7 @@ def generate_and_send_tutor_payroll(
         [
             "pdflatex",
             "-interaction=batchmode",
+            "-include-directory=.",
             "-output-directory",
             str(output_path.parent),
             str(tex_path),
@@ -542,6 +544,7 @@ def generate_and_send_invoice_summary(
         [
             "pdflatex",
             "-interaction=batchmode",
+            "-include-directory=.",
             "-output-directory",
             str(output_path.parent),
             str(tex_path),
