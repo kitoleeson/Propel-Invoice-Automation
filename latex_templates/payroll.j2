@@ -69,8 +69,9 @@
 \begin{tabularx}{\textwidth}{X p{2.5cm} X p{3cm}}
     \multicolumn{4}{l}{\textcolor{propel_blue}{\textbf{Biweek Totals}}} \\
     \toprule
-    \textbf{Total Sessions} & {{ tutors|sum(attribute='num_sessions') }} & \textbf{Total Hours} & {{ tutors|sum(attribute='num_hours')|round(2) }} \\
-    \textbf{Total Students} & {{ tutors|sum(attribute='num_students') }} & \textbf{Total Amount Earned} & \textbf{\$ {{ tutors|sum(attribute='total_earned')|round(2) }}} \\
+    \textbf{Total Sessions} & {{ tutors|sum(attribute='num_sessions') }} & \textbf{Total Invoiced} & \textbf{\$ {{ tutors|sum(attribute='total_invoiced')|round(2) }}} \\
+    \textbf{Total Students} & {{ tutors|sum(attribute='num_students') }} & \textbf{Total Profit} & \textbf{\$ {{ tutors|sum(attribute='total_profit')|round(2) }}} \\
+    \textbf{Total Hours} & {{ tutors|sum(attribute='num_hours')|round(2) }} & \textbf{Total Amount Earned} & \textbf{\$ {{ tutors|sum(attribute='total_earned')|round(2) }}} \\
     \bottomrule
 \end{tabularx}
 

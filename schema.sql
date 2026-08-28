@@ -260,6 +260,42 @@ CREATE TABLE IF NOT EXISTS payroll_entries (
 -- updated: never updated
 -- deleted: never deleted
 
+-- =========================
+-- VIEWS
+-- =========================
+
+CREATE OR REPLACE VIEW session_billing_details AS
+WITH ranked_sessions AS (
+  SELECT s.*, (ROW_NUMBER() OVER(PARTITION BY s.assignment_id ORDER BY s.session_date ASC, s.session_id ASC) = 1) AS first_session
+  FROM sessions s
+)
+SELECT
+  sb.billing_id,
+  b.display_name as biller_name,
+  st.student_id,
+  CASE WHEN d.pref_name IS NOT NULL THEN (((d.gov_first_name || ' ('::text) || d.pref_name) || ') '::text) || d.gov_last_name ELSE (d.gov_first_name || ' '::text) || d.gov_last_name END AS student_name,
+  COALESCE(d.pref_name, d.gov_first_name) AS student_pref_name,
+  t.tutor_id,
+  COALESCE(t.pref_name, t.gov_first_name) AS tutor_name,
+  s.first_session,
+  s.session_date,
+  s.duration_hours,
+  st.hourly_rate + st.markup AS hourly_rate,
+  tf.applied_travel_fee,
+  rf.applied_rush_fee,
+  CASE WHEN s.first_session THEN 0.00 ELSE s.duration_hours * (st.hourly_rate + st.markup) + tf.applied_travel_fee + rf.applied_rush_fee END AS total_fee,
+  CASE WHEN s.first_session THEN 0.00 ELSE s.duration_hours * st.hourly_rate + tf.applied_travel_fee + rf.applied_rush_fee END AS total_tutor_fee,
+  st.subjects
+FROM ranked_sessions s
+  LEFT JOIN student_tutor st ON s.assignment_id = st.assignment_id
+  LEFT JOIN students d ON st.student_id = d.student_id
+  LEFT JOIN tutors t ON st.tutor_id = t.tutor_id
+  LEFT JOIN student_billing sb ON st.student_id = sb.student_id
+  LEFT JOIN billing_accounts b ON sb.billing_id = b.billing_id
+  CROSS JOIN LATERAL (SELECT CASE WHEN s.add_travel_fee IS TRUE THEN COALESCE(st.travel_fee, 0) ELSE 0 END AS applied_travel_fee) tf
+  CROSS JOIN LATERAL (SELECT CASE WHEN s.add_rush_fee IS TRUE THEN COALESCE(st.rush_fee, 0) ELSE 0 END AS applied_rush_fee) rf
+ORDER BY s.session_date ASC;
+
 COMMIT;
 
 -- ADD UNIQUE CONSTRAINT BACK TO EMAIL AFTER TESTING
