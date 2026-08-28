@@ -1,8 +1,9 @@
 # All with help from Google Gemini
 import logging
 import subprocess
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from jinja2 import Environment, FileSystemLoader
 from rich.logging import RichHandler
@@ -71,7 +72,11 @@ def get_valid_date(query: str) -> date:
     while True:
         date_str = input(query).strip()
         try:
-            return datetime.strptime(date_str, "%Y-%m-%d").date()
+            return (
+                datetime.strptime(date_str, "%Y-%m-%d")
+                .replace(tzinfo=timezone.utc)
+                .date()
+            )
         except ValueError:
             print("Invalid date format. Please use YYYY-MM-DD.")
 
@@ -100,8 +105,17 @@ def parse_session(session: dict):
         "hourly_rate": float(session["hourly_rate"]),
         "total_fee": float(session["total_fee"]),
         "total_tutor_fee": float(session["total_tutor_fee"]),
+        "total_profit": float(session["total_profit"]),
         "subjects": session["subjects"],
     }
+
+
+LOCAL_TZ = ZoneInfo("America/Edmonton")
+
+
+def get_today() -> date:
+    """Returns the current date in the local timezone."""
+    return datetime.now(tz=LOCAL_TZ).date()
 
 
 # Jinja2 template rendering
@@ -113,7 +127,7 @@ latex_env = Environment(
 )
 
 email_env = Environment(
-    loader=FileSystemLoader(TEMPLATES_DIR / "email_templates"),
+    loader=FileSystemLoader(TEMPLATES_DIR / "email_bodies"),
     autoescape=False,
     trim_blocks=True,
     lstrip_blocks=True,

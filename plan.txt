@@ -1,9 +1,0 @@
-get all current tabs from view
-ingest new sessions
-generate new invoices using current tabs. send out
-generate new payroll and invoice summary. send out
-
-✓ abstract long queries into sql views held in the database, including indexes based on regular parameters (such as for dates), then query view with parameters
-✓ abstract the progress bar updating into its own function, which can wrap around others
-✓ abstract the email bodies into .txt files
-✓ merge payroll and invoice summary generation into one function, and one email

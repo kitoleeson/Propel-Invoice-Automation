@@ -28,13 +28,13 @@ logging.basicConfig(level=logging.INFO, format="%(message)s", handlers=[RichHand
 logger = logging.getLogger(__name__)
 
 # Module imports
-from helper import get_valid_yes_no
+from helper import get_today, get_valid_yes_no
 from invoice import generate_and_send_invoices
 from sheets_ingest import ingest_sessions
 
 
 # Main function
-def run_billing_cycle(biweek_start: date = date.today() - timedelta(days=14)):
+def run_billing_cycle(biweek_start: date | None = None):
     """
     Run the biweekly billing cycle.
     This function performs the following steps:
@@ -42,10 +42,12 @@ def run_billing_cycle(biweek_start: date = date.today() - timedelta(days=14)):
         2. Generate and send student invoices
         3. Generate tutor payroll summary
     Arguments:
-        biweek_start (date): The start date of the 2-week billing period. Defaults to 14 days before the current date.
+        biweek_start (date | None): The start date of the 2-week billing period. Defaults to 14 days before the current date.
     Returns:
         None
     """
+    if biweek_start is None:
+        biweek_start = get_today() - timedelta(days=14)
     biweek_end = biweek_start + timedelta(days=14)
     logger.info(
         f"Starting billing cycle for period: {biweek_start} (inclusive) → {biweek_end} (exclusive)"
@@ -73,9 +75,9 @@ if __name__ == "__main__":
         biweek_start = (
             date.fromisoformat(args.start)
             if args.start
-            else date.today() - timedelta(days=14)
+            else get_today() - timedelta(days=14)
         )
-        if biweek_start > date.today():
+        if biweek_start > get_today():
             logger.error(f"Start date {biweek_start} cannot be in the future.")
             sys.exit(1)
     except ValueError:

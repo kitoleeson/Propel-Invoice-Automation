@@ -6,7 +6,7 @@ Ingests session data from Google Sheets. Reads each tutor's sheet, parses sessio
 # Imports
 import logging
 import os
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 import gspread
 import psycopg2
@@ -32,7 +32,9 @@ DATABASE_URL = (
 
 def parse_datetime(serial_number):
     """Convert Google Sheets serial date to Python datetime."""
-    return datetime(1899, 12, 30) + timedelta(days=float(serial_number))
+    return datetime(1899, 12, 30, tzinfo=timezone.utc) + timedelta(
+        days=float(serial_number)
+    )
 
 
 def parse_session_row(row):
@@ -144,6 +146,8 @@ def ingest_sessions(biweek_start: date, biweek_end: date):
             progress.update(sheets_bar, advance=1)
         progress.update(
             sheets_bar,
-            description=format_progress_update("All sheets processed ✓", "green"),
+            description=format_progress_update(
+                f"All sheets processed ✓ ({count} sessions added)", "green"
+            ),
         )
     return count

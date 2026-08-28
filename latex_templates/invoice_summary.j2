@@ -57,7 +57,7 @@
     \textbf{BID} & \textbf{Biller} & \textbf{Invoice \#} & \textbf{\# Sessions} & \textbf{\# Students} & \textbf{Total Due (\$)} \\
     \midrule
     {% for biller in billers %}
-    {{ biller.billing_id }} & {{ biller.biller_name }} & {{ biller.invoice_num }} & {{ biller.num_sessions }} & {{ biller.num_students }} & {{ biller.total_due|round(2) }} \\
+    {{ biller.billing_id }} & {{ biller.biller_name }} & {{ "%04d"|format(biller.invoice_num) }} & {{ biller.num_sessions }} & {{ biller.num_students }} & {{ biller.total_due|round(2) }} \\
     {% endfor %}
     \bottomrule
 \end{tabularx}

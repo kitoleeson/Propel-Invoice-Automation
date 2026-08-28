@@ -49,7 +49,7 @@ def fetch_tabs_before_date(date: date):
         ) p ON p.billing_id = b.billing_id;
     """
     results = db.fetch_all(query, (date, date))
-    return {row["billing_id"]: row["current_tab"] for row in results}
+    return {row["billing_id"]: float(row["current_tab"]) for row in results}
 
 
 def fetch_and_parse_biweekly_sessions(biweek_start: date, biweek_end: date):
@@ -232,6 +232,8 @@ def build_tutor_payroll(
                 "num_hours": sum(session["duration_hours"] for session in sessions),
                 "num_students": len({session["student_id"] for session in sessions}),
                 "total_earned": sum(session["total_tutor_fee"] for session in sessions),
+                "total_invoiced": sum(session["total_fee"] for session in sessions),
+                "total_profit": sum(session["total_profit"] for session in sessions),
             }
         )
 
