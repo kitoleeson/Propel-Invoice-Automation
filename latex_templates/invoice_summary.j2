@@ -54,7 +54,7 @@
 \begin{tabularx}{\textwidth}{p{1cm} p{2cm} p{2.5cm} p{2.5cm} p{3cm} X}
     \multicolumn{6}{l}{\textcolor{propel_blue}{\textbf{Invoice Summary}}} \\
     \toprule
-    \textbf{TID} & \textbf{Biller} & \textbf{Invoice \#} & \textbf{\# Sessions} & \textbf{\# Students} & \textbf{Total Due (\$)} \\
+    \textbf{BID} & \textbf{Biller} & \textbf{Invoice \#} & \textbf{\# Sessions} & \textbf{\# Students} & \textbf{Total Due (\$)} \\
     \midrule
     {% for biller in billers %}
     {{ biller.billing_id }} & {{ biller.biller_name }} & {{ biller.invoice_num }} & {{ biller.num_sessions }} & {{ biller.num_students }} & {{ biller.total_due|round(2) }} \\
