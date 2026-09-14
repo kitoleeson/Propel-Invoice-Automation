@@ -105,7 +105,7 @@ def parse_session(session: dict):
         "hourly_rate": float(session["hourly_rate"]),
         "total_fee": float(session["total_fee"]),
         "total_tutor_fee": float(session["total_tutor_fee"]),
-        "total_profit": float(session["total_profit"]),
+        "total_profit": float(session["total_fee"] - session["total_tutor_fee"]),
         "subjects": session["subjects"],
     }
 
