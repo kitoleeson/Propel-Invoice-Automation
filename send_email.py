@@ -29,10 +29,18 @@ def send_email(email_info: dict):
         None
     """
     try:
+        test = os.getenv("APP_ENV") != "prod"
+        host = os.getenv("TEST_SMTP_HOST") if test else os.getenv("SMTP_HOST")
+        port = int(os.getenv("TEST_SMTP_PORT")) if test else int(os.getenv("SMTP_PORT"))
+        user = os.getenv("TEST_SMTP_USER") if test else os.getenv("SMTP_USER")
+        password = (
+            os.getenv("TEST_SMTP_PASSWORD") if test else os.getenv("SMTP_PASSWORD")
+        )
+
         # Create the email message
         msg = EmailMessage()
         msg["Subject"] = email_info["subject"]
-        msg["From"] = email_info["from"]
+        msg["From"] = email_info["from"] if not test else os.getenv("TEST_SMTP_USER")
         msg["To"] = email_info["to"]
         msg.set_content(email_info["body"])
 
@@ -46,13 +54,11 @@ def send_email(email_info: dict):
             )
 
         # Send the email
-        with smtplib.SMTP(
-            os.getenv("SMTP_HOST"), int(os.getenv("SMTP_PORT"))
-        ) as server:
+        with smtplib.SMTP(host, port) as server:
             server.ehlo()
             server.starttls()
             server.ehlo()
-            server.login(os.getenv("SMTP_USER"), os.getenv("SMTP_PASSWORD"))
+            server.login(user, password)
             server.send_message(msg)
     except Exception as e:
         logger.error(f"Failed to send email to {email_info['to']}: {e}")
