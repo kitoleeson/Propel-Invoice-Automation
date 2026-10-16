@@ -419,7 +419,7 @@ def generate_and_send_invoices(biweek_start: date, biweek_end: date):
         None
     """
     # Fetch tabs before this biweek
-    prior_tabs = fetch_tabs_before_date(biweek_start)
+    prior_tabs = fetch_tabs_before_date(biweek_end)
 
     # Fetch and parse sessions from this biweek
     sessions = fetch_and_parse_biweekly_sessions(biweek_start, biweek_end)
